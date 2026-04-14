@@ -22,7 +22,7 @@ MATCH (players:PLAYER {name : "LeBron James"}) RETURN players;
 MATCH (players:PLAYER) RETURN players.name;
 
 //For RETURN Player with Name = "LeBron James" with height = 2.1
-MATCH (players:PLAYER {name : "LeBron James", height = 2.1}) RETURN players;
+MATCH (players:PLAYER {name : "LeBron James", height: 2.1}) RETURN players;
 
 //For Return Player with height greater than 2
 MATCH (players:PLAYER) WHERE players.height >= 2 RETURN players;
@@ -38,7 +38,7 @@ MATCH (players:PLAYER) WHERE players.weight >= 100 AND players.height <= 2 RETUR
 
 
 //For Return Players with weight greater than 100 and height lesser than 2
-MATCH (players:PLAYER) WHERE players.weight >= 120 AND players.height <= 2.15TURN players;
+MATCH (players:PLAYER) WHERE players.weight >= 120 AND players.height <= 2.15 RETURN players;
 
 
 //For Return Players with weight greater or equal to 120 (OR) height lesser or equal to 2.15
