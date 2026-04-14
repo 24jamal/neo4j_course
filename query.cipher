@@ -1,0 +1,185 @@
+// For RETURN All Nodes
+MATCH (n) RETURN n;
+
+//For RETURN All players
+MATCH (players:PLAYER) RETURN players;
+
+//For RETURN All Coaches
+MATCH (COACHES:COACH) RETURN COACHES;
+
+//For RETURN All Teams
+MATCH (Teams: TEAM) RETURN Teams;
+
+//For RETURN Player with Name = "LeBron James"
+MATCH (players: PLAYER)
+WHERE players.name = "LeBron James"
+RETURN players;
+
+//For RETURN Player with Name = "LeBron James"
+MATCH (players:PLAYER {name : "LeBron James"}) RETURN players;
+
+//For RETURN All players names only
+MATCH (players:PLAYER) RETURN players.name;
+
+//For RETURN Player with Name = "LeBron James" with height = 2.1
+MATCH (players:PLAYER {name : "LeBron James", height = 2.1}) RETURN players;
+
+//For Return Player with height greater than 2
+MATCH (players:PLAYER) WHERE players.height >= 2 RETURN players;
+
+//For Return Player with height lesser than 2
+MATCH (players:PLAYER) WHERE players.height < 2 RETURN players;
+
+//For Return Obese Players (BMI > 25)
+MATCH (players:PLAYER) WHERE (players.weight / (players.height * players.height)) > 25 RETURN players
+
+//For Return Players with weight greater than 100 and height lesser than 2
+MATCH (players:PLAYER) WHERE players.weight >= 100 AND players.height <= 2 RETURN players;
+
+
+//For Return Players with weight greater than 100 and height lesser than 2
+MATCH (players:PLAYER) WHERE players.weight >= 120 AND players.height <= 2.15TURN players;
+
+
+//For Return Players with weight greater or equal to 120 (OR) height lesser or equal to 2.15
+MATCH (players:PLAYER) WHERE players.weight >= 120 OR players.height <= 2.15 RETURN players;
+
+//For Return Players NOT ( weight greater or equal to 120 (OR) height lesser or equal to 2.15)
+MATCH (players:PLAYER) WHERE NOT players.weight >= 120 OR players.height >= 2.15 RETURN players;
+
+//LIMIT 5 (players with height greater than 2)
+MATCH (players:PLAYER) WHERE players.height >=2  RETURN players LIMIT 5;
+
+//SKIP 2
+MATCH (players:PLAYER) WHERE players.height >=2  RETURN players SKIP 2 LIMIT 2;
+
+// Return Players plays for LA Lakers:
+MATCH (player:PLAYER) -[:PLAYS_FOR]-> (teams:TEAM)
+WHERE teams.name = "LA Lakers" 
+RETURN player,teams;
+
+// Return Players plays for LA Lakers OR Dallas Mavericks:
+MATCH (player:PLAYER) -[:PLAYS_FOR]-> (teams:TEAM)
+WHERE teams.name = "LA Lakers" OR teams.name = "Dallas Mavericks"
+RETURN player,teams;
+
+//
+MATCH (player:PLAYER) -[contract:PLAYS_FOR]-> (teams:TEAM)
+WHERE contract.salary >= 35000000
+RETURN player,teams, contract;
+
+//Shows Lebron James TEAM MATES 
+MATCH (lebron:PLAYER {name: "LeBron James"})-[r:TEAMMATES]-(teammate:PLAYER)
+RETURN lebron, r, teammate;
+
+//All teammates of LeBron James who earn ≥ 40 million salary
+MATCH (lebron:PLAYER {name : "LeBron James"}) -
+[:TEAMMATES] -> (teammate:PLAYER)
+MATCH (teammate) - [contract:PLAYS_FOR] ->
+(team:TEAM)
+WHERE contract.salary >= 40000000
+RETURN teammate;
+
+//List all players and how many games they played, sorted from highest to lowest
+MATCH (player:PLAYER) -
+[gamePlayed:PLAYED_AGAINST] -> (:TEAM)
+RETURN player.name , COUNT(gamePlayed)  AS games_played
+ORDER BY games_played DESC;
+
+//No of matches played by players against teams
+MATCH (player:PLAYER) -
+[gamePlayed:PLAYED_AGAINST] -> (:TEAM)
+RETURN player.name, COUNT(gamePlayed) as games_played
+ORDER BY games_played DESC;
+
+//Total No of minutes played by players against all teams
+MATCH (player:PLAYER) -
+[gamePlayed:PLAYED_AGAINST] -> (:TEAM)
+RETURN player.name, SUM(gamePlayed.minutes) as games_played_minutes
+ORDER BY games_played_minutes DESC;
+
+
+//All Players Avgerage points played against teams
+MATCH (player:PLAYER) -
+[gamePlayed:PLAYED_AGAINST] -> (:TEAM)
+RETURN player.name, AVG(gamePlayed.points) as games_played_points
+ORDER BY games_played_points DESC;
+
+//All Players Total minutes played against teams
+MATCH (player:PLAYER) -
+[gamePlayed:PLAYED_AGAINST] -> (:TEAM)
+RETURN player.name, AVG(gamePlayed.minutes) as avg_games_played_minutes
+ORDER BY avg_games_played_minutes DESC;
+
+//Detach and Delete the node
+MATCH (ja {name : "Ja Morant"})
+DETACH DELETE ja;
+
+//Delete the relationship of node
+MATCH (joel {name: "Joel Embiid"}) -
+[rel:PLAYS_FOR] -> (:TEAM)
+DELETE rel;
+
+//DELETE ALL Nodes:
+MATCH (n)
+DETACH DELETE n;
+
+//Create a node
+CREATE (lebron:PLAYER:COACH:GENERAL_MANAGER
+{name : "LeBron James", height : 2.01})
+RETURN lebron
+
+//Created node relationship
+CREATE (:PLAYER) - [:PLAYS_FOR {salary:
+34000000}] -> (:TEAM {name: "LA Lakers"})
+
+MATCH (lebron:PLAYER {name : "LeBron James"}),
+(lakers:TEAM {name : "LA Lakers"})
+CREATE (lebron) - [:PLAYS_FOR{salary : 40000000}]
+-> (lakers);
+
+//Find with Id
+MATCH (anthony:PLAYER)
+WHERE elementId(anthony) = "4:bd0e609f-b191-440d-b88f-01a800c97336:1"
+RETURN anthony;
+
+
+//Find with Id and update name
+MATCH (anthony:PLAYER)
+WHERE elementId(anthony) = "4:bd0e609f-b191-440d-b88f-01a800c97336:1"
+SET anthony.name = "Anthony Davis"
+RETURN anthony;
+
+//Find node with ID and Update the node's name
+MATCH (anthony:PLAYER)
+WHERE elementId(anthony) = "4:bd0e609f-b191-440d-b88f-01a800c97336:1"
+SET anthony.name = "Anthony Davis"
+RETURN anthony;
+
+//Find node with ID and Update the node's Age and height
+MATCH (lebron:PLAYER)
+WHERE elementId(lebron) = "4:bd0e609f-b191-440d-b88f-01a800c97336:0"
+SET lebron.height = 2.02 , lebron.age = 36
+RETURN lebron; 
+
+//Find node with ID and Update the node's LABEL
+MATCH (lebron:PLAYER)
+WHERE elementId(lebron) = "4:bd0e609f-b191-440d-b88f-01a800c97336:0"
+SET lebron:REF
+RETURN lebron; 
+
+//Update the Salary of contract relationship with Team
+MATCH (lebron {name: "LeBron James"}) -
+[contract:PLAYS_FOR] -> (team:TEAM)
+SET contract.salary = 600000000
+RETURN lebron, team;
+
+//Remove the age property of the node
+MATCH (lebron {name: "LeBron James"}) 
+REMOVE lebron.age
+RETURN lebron;
+
+//Remove the Label of the Node
+MATCH (lebron {name: "LeBron James"}) 
+REMOVE lebron:REF
+RETURN lebron;
